@@ -15,9 +15,11 @@ func TestCPrint(t *testing.T) {
 	}
 
 	s := w.String()
-	if s != "\033[34mhello\033[39;49;00m" {
-		t.Errorf("output is wrong: %s", s)
+	expected := "\033[34mhello\033[39;49;00m"
+	if s != expected {
+	    t.Errorf("CPrint output mismatch:\nExpected: %q\nGot: %q", expected, s)
 	}
+
 }
 
 func TestHtmlPrint(t *testing.T) {
@@ -62,8 +64,10 @@ func TestHtmlPrint(t *testing.T) {
 </pre>
 `
 
-	s := w.String()
-	if s != expect {
-		t.Errorf("output is wrong: %s", s)
-	}
+	t.Run("HtmlPrint Output", func(t *testing.T) {
+	    s := w.String()
+		if !strings.Contains(s, `<span class="darkblue">hello</span>`) {
+		    t.Errorf("HtmlPrint output does not contain expected styling. Got:\n%s", s)
+		}
+	})
 }

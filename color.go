@@ -12,13 +12,11 @@ const esc = "\033["
 type ColorCodes map[string]string
 
 func (c ColorCodes) String() string {
-	var cc []string
-	for k, _ := range c {
-		if k == "" {
-			continue
-		}
-
-		cc = append(cc, k)
+	cc := make([]string, 0, len(c))
+	for k := range c {
+	    if k != "" {
+	        cc = append(cc, k)
+	    }
 	}
 	sort.Strings(cc)
 
@@ -65,8 +63,8 @@ func init() {
 	}
 
 	for i, x := 0, 30; i < len(darkColors); i, x = i+1, x+1 {
-		colorCodes[darkColors[i]] = esc + fmt.Sprintf("%dm", x)
-		colorCodes[lightColors[i]] = esc + fmt.Sprintf("%d;01m", x)
+		colorCodes[darkColors[i]] = fmt.Sprintf("%s%dm", esc, x)
+		colorCodes[lightColors[i]] = fmt.Sprintf("%s%d;01m", esc, x)
 	}
 
 	colorCodes["darkteal"] = colorCodes["turquoise"]
@@ -92,20 +90,17 @@ func Colorize(attr, text string) string {
 
 	if strings.HasPrefix(attr, "+") && strings.HasSuffix(attr, "+") {
 		result.WriteString(colorCodes["blink"])
-		attr = strings.TrimPrefix(attr, "+")
-		attr = strings.TrimSuffix(attr, "+")
+		attr = strings.Trim(attr, "+")
 	}
 
 	if strings.HasPrefix(attr, "*") && strings.HasSuffix(attr, "*") {
 		result.WriteString(colorCodes["bold"])
-		attr = strings.TrimPrefix(attr, "*")
-		attr = strings.TrimSuffix(attr, "*")
+		attr = strings.Trim(attr, "*")
 	}
 
 	if strings.HasPrefix(attr, "_") && strings.HasSuffix(attr, "_") {
 		result.WriteString(colorCodes["underline"])
-		attr = strings.TrimPrefix(attr, "_")
-		attr = strings.TrimSuffix(attr, "_")
+		attr = strings.Trim(attr, "_")
 	}
 
 	result.WriteString(colorCodes[attr])

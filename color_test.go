@@ -14,12 +14,13 @@ func Test_ColorPalette_Set(t *testing.T) {
 
 	ok = palettes.Set("String", "baz")
 	if !ok {
-		t.Errorf("setting color code String should be ok")
+		t.Fatalf("failed to set color code 'String'")
 	}
 
 	if palettes[stringKind] != "baz" {
-		t.Errorf("color code of String should be baz")
+	    t.Errorf("expected color code of String to be 'baz', got '%s'", palettes[stringKind])
 	}
+
 }
 
 func TestColorize(t *testing.T) {
@@ -46,14 +47,12 @@ func TestColorize(t *testing.T) {
 	}
 
 	for _, tc := range cases {
-		actual := Colorize(tc.Color, "hello")
-		if actual != tc.Output {
-			t.Errorf(
-				"Color: %#v\n\nOutput: %#v\n\nExpected: %#v",
-				tc.Color,
-				actual,
-				tc.Output)
-		}
+	    t.Run(tc.Color, func(t *testing.T) {
+	        actual := Colorize(tc.Color, "hello")
+	        if actual != tc.Output {
+	            t.Errorf("for color %q, expected %q but got %q", tc.Color, tc.Output, actual)
+	        }
+	    })
 	}
 }
 

@@ -5,8 +5,9 @@ import (
 	"io"
 )
 
-const Version = "1.1.0"
+var Version = "1.2.0"
 
 func displayVersion(w io.Writer) {
-	fmt.Fprintf(w, "ccat v%s\n", Version)
+    _, _ = fmt.Fprintf(w, "ccat version %s\n", Version)
 }
+

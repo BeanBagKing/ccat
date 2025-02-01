@@ -10,13 +10,11 @@ import (
 type HtmlCodes map[string]string
 
 func (c HtmlCodes) String() string {
-	var cc []string
-	for k, _ := range c {
-		if k == "" {
-			continue
-		}
-
-		cc = append(cc, k)
+	cc := make([]string, 0, len(c))
+	for k := range c {
+	    if k != "" {
+	        cc = append(cc, k)
+	    }
 	}
 	sort.Strings(cc)
 
@@ -63,8 +61,9 @@ func init() {
 	}
 
 	for i, x := 0, 30; i < len(darkHtmls); i, x = i+1, x+1 {
-		htmlCodes[darkHtmls[i]] = fmt.Sprintf(`<span class="%s">`, darkHtmls[i])
-		htmlCodes[lightHtmls[i]] = fmt.Sprintf(`<span class="%s">`, lightHtmls[i])
+		tag := `<span class="%s">`
+		htmlCodes[darkHtmls[i]] = fmt.Sprintf(tag, darkHtmls[i])
+		htmlCodes[lightHtmls[i]] = fmt.Sprintf(tag, lightHtmls[i])
 	}
 
 	htmlCodes["darkteal"] = htmlCodes["turquoise"]
@@ -82,20 +81,17 @@ func Htmlize(attr, text string) string {
 
 	if strings.HasPrefix(attr, "+") && strings.HasSuffix(attr, "+") {
 		result.WriteString(htmlCodes["blink"])
-		attr = strings.TrimPrefix(attr, "+")
-		attr = strings.TrimSuffix(attr, "+")
+		attr = strings.Trim(attr, "+")
 	}
 
 	if strings.HasPrefix(attr, "*") && strings.HasSuffix(attr, "*") {
 		result.WriteString(htmlCodes["bold"])
-		attr = strings.TrimPrefix(attr, "*")
-		attr = strings.TrimSuffix(attr, "*")
+		attr = strings.Trim(attr, "*")
 	}
 
 	if strings.HasPrefix(attr, "_") && strings.HasSuffix(attr, "_") {
 		result.WriteString(htmlCodes["underline"])
-		attr = strings.TrimPrefix(attr, "_")
-		attr = strings.TrimSuffix(attr, "_")
+		attr = strings.Trim(attr, "_")
 	}
 
 	result.WriteString(htmlCodes[attr])

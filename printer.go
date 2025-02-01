@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"io"
+	"log"
 	"sort"
 	"strings"
 
@@ -75,16 +76,15 @@ var (
 )
 
 func init() {
-	kindsByName = make(map[string]kind)
-	for _, k := range kinds {
-		kindsByName[k.Name] = k
-	}
+    kindsByName = make(map[string]kind, len(kinds))
+    kindsByKind = make(map[syntaxhighlight.Kind]kind, len(kinds))
 
-	kindsByKind = make(map[syntaxhighlight.Kind]kind)
-	for _, k := range kinds {
-		kindsByKind[k.Kind] = k
-	}
+    for _, k := range kinds {
+        kindsByName[k.Name] = k
+        kindsByKind[k.Kind] = k
+    }
 }
+
 
 type kind struct {
 	Name string
@@ -110,8 +110,9 @@ func (c ColorPalettes) Get(k syntaxhighlight.Kind) string {
 
 	kind, ok := kindsByKind[k]
 	if !ok {
-		panic(fmt.Sprintf("Unknown syntax highlight kind %d\n", k))
+	    log.Fatalf("Error: Unknown syntax highlight kind %d. Please check the syntax highlighting rules.", k)
 	}
+
 
 	return c[kind]
 }
@@ -140,17 +141,20 @@ func (p Printer) Print(w io.Writer, kind syntaxhighlight.Kind, tokText string) e
 		tokText = Colorize(c, tokText)
 	}
 
-	_, err := io.WriteString(w, tokText)
+if _, err := io.WriteString(w, tokText); err != nil {
+    return fmt.Errorf("failed to write token text: %w", err)
+}
+return nil
 
-	return err
 }
 
 func HtmlPrint(r io.Reader, w io.Writer, palettes ColorPalettes) error {
-	keys := []string{}
+	keys := make([]string, 0, len(htmlCodes))
 	for k := range htmlCodes {
-		keys = append(keys, k)
+	    keys = append(keys, k)
 	}
 	sort.Strings(keys)
+
 	w.Write([]byte("<style>\n"))
 	for _, s := range keys {
 		if s == "" {

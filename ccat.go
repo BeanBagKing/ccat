@@ -1,11 +1,8 @@
 package main
 
 import (
-	"bytes"
 	"io"
-	"io/ioutil"
 	"os"
-	"syscall"
 
 	"fmt"
 
@@ -21,7 +18,7 @@ type AutoColorPrinter struct {
 }
 
 func (a AutoColorPrinter) Print(r io.Reader, w io.Writer) error {
-	if isatty.IsTerminal(uintptr(syscall.Stdout)) {
+	if isatty.IsTerminal(os.Stdout.Fd()) {
 		return ColorPrinter{a.ColorPalettes}.Print(r, w)
 	} else {
 		return PlainTextPrinter{}.Print(r, w)
@@ -56,23 +53,20 @@ func CCat(fname string, p CCatPrinter, w io.Writer) error {
 	var r io.Reader
 
 	if fname == readFromStdin {
-		b, err := ioutil.ReadAll(os.Stdin)
-		if err != nil {
-			return err
-		}
+		r = os.Stdin
 
-		r = bytes.NewReader(b)
 	} else {
 		file, err := os.Open(fname)
 		if err != nil {
-			return err
+		    return err
 		}
-
-		defer file.Close()
+		defer func() {
+		    _ = file.Close() // Ensuring no accidental panic
+		}()
 
 		fi, err := file.Stat()
 		if err != nil {
-			return err
+		    return err
 		}
 
 		if fi.Mode().IsDir() {

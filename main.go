@@ -40,7 +40,7 @@ func (c *ccatCmd) Run(cmd *cobra.Command, args []string) {
 	for k, v := range c.ColorCodes {
 		ok := colorPalettes.Set(k, v)
 		if !ok {
-			log.Fatal(fmt.Errorf("unknown color code: %s", k))
+			log.Fatalf("unknown color code: %s", k)
 		}
 	}
 
@@ -93,6 +93,7 @@ func main() {
 	rootCmd := &cobra.Command{
 		Use:  "ccat [OPTION]... [FILE]...",
 		Long: "Colorize FILE(s), or standard input, to standard output.",
+		Version: Version,
 		Example: `$ ccat FILE1 FILE2 ...
   $ ccat --bg=dark FILE1 FILE2 ... # dark background
   $ ccat --html # output html
@@ -103,21 +104,7 @@ func main() {
 		Run: ccatCmd.Run,
 	}
 
-	usageTempl := `{{ $cmd := . }}
-Usage:
-  {{.UseLine}}
-
-Flags:
-{{.LocalFlags.FlagUsages}}
-Using color is auto both by default and with --color=auto. With --color=auto,
-ccat emits color codes only when standard output is connected to a terminal.
-Color codes can be changed with -G KEY=VALUE. List of color codes can
-be found with --palette.
-
-Examples:
-  {{ .Example }}
-`
-	rootCmd.SetUsageTemplate(usageTempl)
+	rootCmd.SetUsageTemplate(rootCmd.UsageString())
 
 	rootCmd.PersistentFlags().StringVarP(&ccatCmd.BG, "bg", "", "light", `set to "light" or "dark" depending on the terminal's background`)
 	rootCmd.PersistentFlags().StringVarP(&ccatCmd.Color, "color", "C", "auto", `colorize the output; value can be "never", "always" or "auto"`)
@@ -126,5 +113,8 @@ Examples:
 	rootCmd.PersistentFlags().BoolVarP(&ccatCmd.ShowPalette, "palette", "", false, `show color palettes`)
 	rootCmd.PersistentFlags().BoolVarP(&ccatCmd.ShowVersion, "version", "v", false, `show version`)
 
-	rootCmd.Execute()
+	if err := rootCmd.Execute(); err != nil {
+    log.Fatal(err)
+	}
+
 }
