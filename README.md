@@ -1,3 +1,26 @@
+# Fork Info
+Mostly playing with AI code reviews, updated a few things (e.g. `ioutil` to `io`) and optimized some things. It did pretty well, and I don't think it introduced any bugs. Quick trial shows a roughly 10% faster runtime.
+
+|Original||||Average|
+|----|-----|-----|-----|-----|
+|real|2.932|2.879|2.799|2.870|
+|user|0.839|0.849|0.809|0.832|
+|sys|1.370|1.374|1.342|1.362|
+
+|Fork||||Average|
+|----|-----|-----|-----|-----|
+|real|2.660|3.045|2.628|2.778|
+|user|0.613|0.733|0.655|0.667|
+|sys|1.185|1.432|1.250|1.289|
+
+|Delta|||% Diff|||Avg % Diff|
+|----|-----|-----|-----|-----|-----|-----|
+|real|-0.092||real|-3.2175||-9.480|
+|user|-0.165||user|-19.863|||
+|sys|-0.073||sys|-5.359|||
+
+Removed all the files that don't matter to me (sorry not sorry). Original README is below and may or may not apply to this anymore.
+
 # ccat
 [![OpenCollective](https://opencollective.com/ccat/backers/badge.svg)](#backers) 
 [![OpenCollective](https://opencollective.com/ccat/sponsors/badge.svg)](#sponsors)
